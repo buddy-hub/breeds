@@ -7,6 +7,7 @@ import com.pets.breeds.adapter.http.response.toResponse
 import com.pets.breeds.application.filter.GroupFilter
 import com.pets.breeds.application.services.GroupService
 import com.pets.breeds.utils.pagination.PaginatedResult
+import com.pets.breeds.utils.pagination.Pagination
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
@@ -14,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
-import java.util.*
+import java.util.UUID
 
 @RestController
 @RequestMapping("/v1/groups")
@@ -27,10 +28,15 @@ class GroupController(val groupService: GroupService) {
         @RequestParam name: String?,
         @RequestParam description: String?
     ): PaginatedResult<GroupResponse> {
-        val result = groupService.get(
-            groupFilter = GroupFilter(name, description),
+        val groupFilter = GroupFilter(name, description)
+        val pagination = Pagination(
             page = page ?: 1,
             pageSize = pageSize ?: 10
+        )
+
+        val result = groupService.get(
+            groupFilter = groupFilter,
+            pagination = pagination
         )
 
         return PaginatedResult(

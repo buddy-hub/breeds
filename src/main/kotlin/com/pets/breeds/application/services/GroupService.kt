@@ -8,17 +8,17 @@ import com.pets.breeds.application.result.GroupResult
 import com.pets.breeds.application.result.toResult
 import com.pets.breeds.domain.GroupRepository
 import com.pets.breeds.utils.pagination.PaginatedResult
+import com.pets.breeds.utils.pagination.Pagination
 import org.springframework.stereotype.Service
 import java.util.UUID
 
 @Service
 class GroupService(private val groupRepository: GroupRepository) {
 
-    suspend fun get(groupFilter: GroupFilter, page: Int, pageSize: Int): PaginatedResult<GroupResult> {
+    suspend fun get(groupFilter: GroupFilter, pagination: Pagination): PaginatedResult<GroupResult> {
         val result = groupRepository.find(
             groupFilter = groupFilter.toDomain(),
-            page = page,
-            pageSize = pageSize
+            pagination = pagination
         )
 
         return PaginatedResult(

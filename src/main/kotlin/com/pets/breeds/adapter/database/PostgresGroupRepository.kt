@@ -6,6 +6,7 @@ import com.pets.breeds.domain.Group
 import com.pets.breeds.domain.GroupFilter
 import com.pets.breeds.domain.GroupRepository
 import com.pets.breeds.utils.pagination.PaginatedResult
+import com.pets.breeds.utils.pagination.Pagination
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.dao.EmptyResultDataAccessException
 import org.springframework.jdbc.core.JdbcTemplate
@@ -18,11 +19,16 @@ class PostgresGroupRepository(@Autowired val jdbcTemplate: JdbcTemplate): GroupR
     private val rowMapper: GroupRowMapper = GroupRowMapper();
     override suspend fun find(
         groupFilter: GroupFilter,
-        page: Int,
-        pageSize: Int
+        pagination: Pagination
     ): PaginatedResult<Group> {
         val total = this.countTotal(groupFilter);
-        val data = jdbcTemplate.query(GroupQuery.find(groupFilter, page, pageSize), rowMapper)
+        val data = jdbcTemplate.query(
+            GroupQuery.find(
+                groupFilter = groupFilter,
+                page = pagination.page,
+                pageSize = pagination.pageSize
+            ), rowMapper
+        )
 
         return PaginatedResult(total = total, data = data.toSet())
     }
