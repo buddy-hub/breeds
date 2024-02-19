@@ -1,0 +1,29 @@
+version: '3.4'
+
+services:
+  db:
+    image: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./.docker/postgres/:/var/lib/postgres
+    environment:
+      POSTGRES_USER: breeds
+      POSTGRES_PASSWORD: breeds
+      POSTGRES_DB: breeds
+    networks:
+      - breeds-network
+  pgadmin:
+    image: dpage/pgadmin4
+    environment:
+      PGADMIN_DEFAULT_EMAIL: "admin@mail.com"
+      PGADMIN_DEFAULT_PASSWORD: "admin"
+    ports:
+      - "16543:80"
+    depends_on:
+      - db
+    networks:
+      - breeds-network
+networks:
+  breeds-network:
+    driver: bridge
