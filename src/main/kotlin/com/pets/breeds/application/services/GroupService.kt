@@ -2,6 +2,8 @@ package com.pets.breeds.application.services
 
 import com.pets.breeds.application.command.SaveGroupCommand
 import com.pets.breeds.application.command.toDomain
+import com.pets.breeds.application.filter.GroupFilter
+import com.pets.breeds.application.filter.toDomain
 import com.pets.breeds.application.result.GroupResult
 import com.pets.breeds.application.result.toResult
 import com.pets.breeds.domain.GroupRepository
@@ -12,8 +14,12 @@ import java.util.UUID
 @Service
 class GroupService(private val groupRepository: GroupRepository) {
 
-    suspend fun get(page: Int, pageSize: Int): PaginatedResult<GroupResult> {
-        val result = groupRepository.find(page, pageSize)
+    suspend fun get(groupFilter: GroupFilter, page: Int, pageSize: Int): PaginatedResult<GroupResult> {
+        val result = groupRepository.find(
+            groupFilter = groupFilter.toDomain(),
+            page = page,
+            pageSize = pageSize
+        )
 
         return PaginatedResult(
             total = result.total,

@@ -1,13 +1,28 @@
 package com.pets.breeds.adapter.database.query
 
 import com.pets.breeds.domain.Group
+import com.pets.breeds.domain.GroupFilter
 import java.util.UUID
 
 object GroupQuery {
 
-    fun find(page: Int, pageSize: Int): String {
+    fun find(groupFilter: GroupFilter, page: Int, pageSize: Int): String {
         val offset = (page - 1) * pageSize
-        return "SELECT g.* FROM groups as g LIMIT $pageSize OFFSET $offset;"
+        var query = "SELECT g.* FROM groups as g WHERE 1=1"
+
+        with(groupFilter) {
+            if (!name.isNullOrBlank()) {
+                query += " AND name ILIKE '%$name%'"
+            }
+
+            if (!description.isNullOrBlank()) {
+                query += " AND description ILIKE '%$description%'"
+            }
+        }
+
+        query += " LIMIT $pageSize OFFSET $offset;"
+
+        return query
     }
 
 
@@ -21,6 +36,21 @@ object GroupQuery {
         "INSERT INTO groups (id, name, description) " +
             "VALUES ('${group.id}', '${group.name}', '${group.description}');"
 
-    fun countTotal() =
-        "SELECT COUNT(*) FROM groups"
+    fun countTotal(groupFilter: GroupFilter): String {
+        var query = "SELECT COUNT(*) FROM groups WHERE 1=1"
+
+        with(groupFilter) {
+            if (!name.isNullOrBlank()) {
+                query += " AND name ILIKE '%$name%'"
+            }
+
+            if (!description.isNullOrBlank()) {
+                query += " AND description ILIKE '%$description%'"
+            }
+        }
+
+        query += ";"
+
+        return query
+    }
 }

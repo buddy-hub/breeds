@@ -3,6 +3,7 @@ package com.pets.breeds.adapter.database
 import com.pets.breeds.adapter.database.query.GroupQuery
 import com.pets.breeds.adapter.database.rowMapper.GroupRowMapper
 import com.pets.breeds.domain.Group
+import com.pets.breeds.domain.GroupFilter
 import com.pets.breeds.domain.GroupRepository
 import com.pets.breeds.utils.pagination.PaginatedResult
 import org.springframework.beans.factory.annotation.Autowired
@@ -15,9 +16,13 @@ import java.util.*
 class PostgresGroupRepository(@Autowired val jdbcTemplate: JdbcTemplate): GroupRepository {
 
     private val rowMapper: GroupRowMapper = GroupRowMapper();
-    override suspend fun find(page: Int, pageSize: Int): PaginatedResult<Group> {
-        val total = this.countTotal();
-        val data = jdbcTemplate.query(GroupQuery.find(page, pageSize), rowMapper)
+    override suspend fun find(
+        groupFilter: GroupFilter,
+        page: Int,
+        pageSize: Int
+    ): PaginatedResult<Group> {
+        val total = this.countTotal(groupFilter);
+        val data = jdbcTemplate.query(GroupQuery.find(groupFilter, page, pageSize), rowMapper)
 
         return PaginatedResult(total = total, data = data.toSet())
     }
@@ -43,7 +48,10 @@ class PostgresGroupRepository(@Autowired val jdbcTemplate: JdbcTemplate): GroupR
         return group
     }
 
-    private suspend fun countTotal(): Int {
-        return jdbcTemplate.queryForObject(GroupQuery.countTotal(), Int::class.java) ?: 0
+    private suspend fun countTotal(groupFilter: GroupFilter): Int {
+        return jdbcTemplate.queryForObject(
+            GroupQuery.countTotal(groupFilter),
+            Int::class.java
+        ) ?: 0
     }
 }

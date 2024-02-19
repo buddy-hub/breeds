@@ -4,6 +4,7 @@ import com.pets.breeds.adapter.http.request.SaveGroupRequest
 import com.pets.breeds.adapter.http.request.toCommand
 import com.pets.breeds.adapter.http.response.GroupResponse
 import com.pets.breeds.adapter.http.response.toResponse
+import com.pets.breeds.application.filter.GroupFilter
 import com.pets.breeds.application.services.GroupService
 import com.pets.breeds.utils.pagination.PaginatedResult
 import org.springframework.web.bind.annotation.GetMapping
@@ -21,10 +22,16 @@ class GroupController(val groupService: GroupService) {
 
     @GetMapping
     suspend fun get(
-        @RequestParam(name = "page") page: Int,
-        @RequestParam(name = "page_size") pageSize: Int
+        @RequestParam page: Int?,
+        @RequestParam(name = "page_size") pageSize: Int?,
+        @RequestParam name: String?,
+        @RequestParam description: String?
     ): PaginatedResult<GroupResponse> {
-        val result = groupService.get(page, pageSize)
+        val result = groupService.get(
+            groupFilter = GroupFilter(name, description),
+            page = page ?: 1,
+            pageSize = pageSize ?: 10
+        )
 
         return PaginatedResult(
             total = result.total,
