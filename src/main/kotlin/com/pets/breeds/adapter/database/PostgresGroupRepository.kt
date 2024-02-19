@@ -8,11 +8,19 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.dao.EmptyResultDataAccessException
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.stereotype.Repository
+import java.util.*
 
 @Repository
 class PostgresGroupRepository(@Autowired val jdbcTemplate: JdbcTemplate): GroupRepository {
 
     private val rowMapper: GroupRowMapper = GroupRowMapper();
+    override suspend fun findById(id: UUID): Group? {
+        return try {
+            jdbcTemplate.queryForObject(GroupQuery.findById(id), rowMapper)
+        } catch (e: EmptyResultDataAccessException) {
+            null
+        }
+    }
 
     override suspend fun findByName(name: String): Group? {
         return try {
