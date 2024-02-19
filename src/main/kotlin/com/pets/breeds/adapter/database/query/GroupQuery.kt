@@ -5,6 +5,12 @@ import java.util.UUID
 
 object GroupQuery {
 
+    fun find(page: Int, pageSize: Int): String {
+        val offset = (page - 1) * pageSize
+        return "SELECT g.* FROM groups as g LIMIT $pageSize OFFSET $offset;"
+    }
+
+
     fun findById(id: UUID) =
         "SELECT g.* FROM groups as g WHERE id = '$id';"
 
@@ -14,4 +20,7 @@ object GroupQuery {
     fun insert(group: Group) =
         "INSERT INTO groups (id, name, description) " +
             "VALUES ('${group.id}', '${group.name}', '${group.description}');"
+
+    fun countTotal() =
+        "SELECT COUNT(*) FROM groups"
 }

@@ -5,11 +5,21 @@ import com.pets.breeds.application.command.toDomain
 import com.pets.breeds.application.result.GroupResult
 import com.pets.breeds.application.result.toResult
 import com.pets.breeds.domain.GroupRepository
+import com.pets.breeds.utils.pagination.PaginatedResult
 import org.springframework.stereotype.Service
 import java.util.UUID
 
 @Service
-class GroupService(val groupRepository: GroupRepository) {
+class GroupService(private val groupRepository: GroupRepository) {
+
+    suspend fun get(page: Int, pageSize: Int): PaginatedResult<GroupResult> {
+        val result = groupRepository.find(page, pageSize)
+
+        return PaginatedResult(
+            total = result.total,
+            data = result.data.map { it.toResult() }.toSet()
+        )
+    }
 
     suspend fun getById(id: UUID): GroupResult? {
         return groupRepository.findById(id)?.toResult()

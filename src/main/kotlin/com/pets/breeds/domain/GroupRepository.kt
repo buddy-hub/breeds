@@ -1,8 +1,11 @@
 package com.pets.breeds.domain
 
+import com.pets.breeds.utils.pagination.PaginatedResult
 import java.util.UUID
 
 interface GroupRepository {
+
+    suspend fun find(page: Int, pageSize: Int): PaginatedResult<Group>
 
     suspend fun findById(id: UUID): Group?
 
